@@ -9,6 +9,7 @@ function Form() {
   const {user} = useGlobalContext();
   const [tweet, setTweet] = useState('');
   const [tweets, setTweets] = useState([]);
+  const [preview, setPreview] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,6 +36,26 @@ function Form() {
     });
   };
 
+  const fileUpload = (e) => {
+    const files = Array.from(e.target.files).map((item) =>
+      URL.createObjectURL(item)
+    );
+    setPreview([...files]);
+
+    // Array.from(e.target.files).map((item) => {
+    //   let fileArray = [];
+    //   const reader = new FileReader();
+    //   reader.readAsDataURL(item);
+    //   reader.onloadend = (finishevent) => {
+    //     return fileArray.push({
+    //       ...finishevent,
+    //       url: finishevent.target.result,
+    //     });
+    //   };
+    //   setPreview(fileArray);
+    // });
+  };
+
   useEffect(() => {
     getData();
   }, []);
@@ -51,6 +72,20 @@ function Form() {
         <input type="submit" value="submit" />
       </form>
       <div>
+        <input
+          multiple
+          type="file"
+          name="file"
+          accept="image/*"
+          onChange={fileUpload}
+        />
+        {preview &&
+          preview.length > 1 &&
+          preview.map((item, index) => {
+            return <img key={index} src={item} alt="preview" />;
+          })}
+      </div>
+      <div>
         {tweets &&
           tweets.map((item) => {
             return <Tweet key={item.id} {...item} />;
@@ -62,5 +97,8 @@ function Form() {
 
 const Wrapper = styled.div`
   margin-top: 3rem;
+  img {
+    width: 100px;
+  }
 `;
 export default Form;
