@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Header, Tweet} from '../components';
+import {Header, Form} from '../components';
 
 function Home() {
   return (
     <Wrapper>
       <Header />
-      <Tweet />
+      <Form />
     </Wrapper>
   );
 }

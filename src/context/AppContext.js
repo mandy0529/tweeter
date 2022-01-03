@@ -48,6 +48,10 @@ const AppProvider = ({children}) => {
     });
   };
 
+  useEffect(() => {
+    stayLogin();
+  }, []);
+
   return (
     <AppContext.Provider
       value={{...state, googleLogin, googleLogout, stayLogin}}
