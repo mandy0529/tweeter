@@ -39,7 +39,6 @@ const AppProvider = ({children}) => {
 
   const stayLogin = () => {
     auth.onAuthStateChanged((user) => {
-      console.log(user, 'stay user');
       if (user === null || user.displayName === '') {
         dispatch({type: OFF_LOADING});
       }
