@@ -1,6 +1,7 @@
 import {initializeApp} from 'firebase/app';
 import {getAuth, GoogleAuthProvider} from 'firebase/auth';
 import {getFirestore, collection} from 'firebase/firestore';
+import {getStorage} from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDEQWW5l0un9Kv_NfGFWx29Ba2dm2pY6_0',
@@ -16,7 +17,8 @@ initializeApp(firebaseConfig);
 
 const db = getFirestore();
 const collectionRef = collection(db, 'tweets');
+const storage = getStorage();
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
 
-export {db, collectionRef, auth, provider};
+export {db, collectionRef, auth, provider, storage};

@@ -1,24 +1,56 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import {collectionRef} from '../firebase';
+import {collectionRef, storage} from '../firebase';
 import {addDoc, serverTimestamp, getDocs, onSnapshot} from 'firebase/firestore';
 import {Tweet} from '.';
 import {useGlobalContext} from '../context/AppContext';
+import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage';
 
 function Form() {
   const {user} = useGlobalContext();
   const [tweet, setTweet] = useState('');
   const [tweets, setTweets] = useState([]);
   const [preview, setPreview] = useState([]);
+  const [file, setFile] = useState('');
+  const [imageUrl, setImageUrl] = useState([]);
+
+  let newNumber = 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await addDoc(collectionRef, {
-      message: tweet,
-      createdAt: serverTimestamp(),
-      owner: user.id,
+    let imageArray = [];
+    file.map((item, index) => {
+      const storageRef = ref(storage, `${item.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, item);
+
+      uploadTask.on(
+        'state_changed',
+        (item) => {
+          const prog = Math.round(
+            (item.bytesTransferred / item.totalBytes) * 100
+          );
+        },
+        (error) => console.log(error, '2'),
+        async () => {
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          imageArray.push(url);
+          newNumber++;
+          console.log(newNumber, 'newnumber1');
+          if (file.length === newNumber) {
+            console.log(newNumber, 'newnumber2');
+            await addDoc(collectionRef, {
+              message: tweet,
+              createdAt: serverTimestamp(),
+              owner: user.id,
+              url: imageArray,
+            });
+          }
+        }
+      );
     });
+
     setTweet('');
+    setPreview('');
   };
 
   const handleChange = (e) => {
@@ -37,11 +69,11 @@ function Form() {
   };
 
   const fileUpload = (e) => {
-    const files = Array.from(e.target.files).map((item) =>
-      URL.createObjectURL(item)
-    );
-    setPreview([...files]);
-
+    const files = Array.from(e.target.files).map((item) => {
+      setFile((prev) => [...prev, item]);
+      return URL.createObjectURL(item);
+    });
+    setPreview(files);
     // Array.from(e.target.files).map((item) => {
     //   let fileArray = [];
     //   const reader = new FileReader();
@@ -68,11 +100,13 @@ function Form() {
           type="text"
           value={tweet}
           placeholder="what's on your mind ?"
+          required
         />
         <input type="submit" value="submit" />
       </form>
       <div>
         <input
+          required
           multiple
           type="file"
           name="file"
@@ -80,7 +114,6 @@ function Form() {
           onChange={fileUpload}
         />
         {preview &&
-          preview.length > 1 &&
           preview.map((item, index) => {
             return <img key={index} src={item} alt="preview" />;
           })}
@@ -101,4 +134,5 @@ const Wrapper = styled.div`
     width: 100px;
   }
 `;
+
 export default Form;

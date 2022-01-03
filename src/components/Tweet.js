@@ -2,9 +2,10 @@ import {deleteDoc, doc, updateDoc} from 'firebase/firestore';
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {useGlobalContext} from '../context/AppContext';
-import {db} from '../firebase';
+import {db, storage} from '../firebase';
+import {deleteObject, ref} from 'firebase/storage';
 
-function Tweet({message, id, owner}) {
+function Tweet({message, id, owner, url}) {
   const {user} = useGlobalContext();
   const [isEditing, setIsEditing] = useState(false);
   const [editedTweet, setEditedTweet] = useState(message);
@@ -14,6 +15,10 @@ function Tweet({message, id, owner}) {
     if (isOk) {
       const deletedRef = doc(db, 'tweets', id);
       await deleteDoc(deletedRef);
+      url.map(async (item) => {
+        const deserveRef = ref(storage, item);
+        await deleteObject(deserveRef);
+      });
     }
   };
 
@@ -47,6 +52,10 @@ function Tweet({message, id, owner}) {
       ) : (
         <div className="tweet" key={id}>
           <div>{message}</div>
+          {/* {url &&
+            url.map((item, index) => {
+              return <img key={index} src={item} alt="tweet-img" />;
+            })} */}
           {owner === user.id && (
             <>
               <button data-id={id} onClick={handleDelete}>
