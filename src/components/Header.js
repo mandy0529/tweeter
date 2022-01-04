@@ -34,7 +34,7 @@ function Header() {
 }
 
 const Wrapper = styled.div`
-  background: gold;
+  background: teal;
   div {
     display: flex;
     justify-content: center;
