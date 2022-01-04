@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import {collectionRef, storage} from '../firebase';
-import {addDoc, serverTimestamp, getDocs, onSnapshot} from 'firebase/firestore';
+import {addDoc, serverTimestamp, onSnapshot} from 'firebase/firestore';
 import {Tweet} from '.';
 import {useGlobalContext} from '../context/AppContext';
 import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage';
@@ -12,7 +12,6 @@ function Form() {
   const [tweets, setTweets] = useState([]);
   const [preview, setPreview] = useState([]);
   const [file, setFile] = useState('');
-  const [imageUrl, setImageUrl] = useState([]);
 
   let newNumber = 0;
 
@@ -26,9 +25,7 @@ function Form() {
       uploadTask.on(
         'state_changed',
         (item) => {
-          const prog = Math.round(
-            (item.bytesTransferred / item.totalBytes) * 100
-          );
+          Math.round((item.bytesTransferred / item.totalBytes) * 100);
         },
         (error) => console.log(error, '2'),
         async () => {

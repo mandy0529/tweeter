@@ -1,16 +1,12 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Loader from '../components/Loader';
 import {useGlobalContext} from '../context/AppContext';
 
 function Header() {
-  const {user, googleLogout, loading, stayLogin} = useGlobalContext();
-  const {name, photo, email, id} = user;
+  const {user, googleLogout, loading} = useGlobalContext();
+  const {name, photo, email} = user;
   const isLoggedIn = name !== '' && photo !== '' && email !== '';
-
-  useEffect(() => {
-    stayLogin();
-  }, []);
 
   if (loading) {
     return <Loader />;
